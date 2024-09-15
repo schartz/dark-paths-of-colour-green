@@ -31,6 +31,10 @@ Dark paths of colour green is an action adventure game. To define it in short, i
    ```
    git clone git@github.com:schartz/dark-paths-of-colour-green.git DPOCG
    ```
+3. Get the assets in the content folder:
+   ```
+   dvc pull
+   ```
 
 2. Open the project in Unreal Engine 5:
    - On Windows: Double click on the .uproject file
