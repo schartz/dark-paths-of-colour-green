@@ -3,11 +3,13 @@
 
 #include "DPOCGGame/Public/Components/CustomMovementComponent.h"
 
+#include "MotionWarpingComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "DPOCGGame/DebugHelper.h"
 #include "DPOCGGame/DPOCGGameCharacter.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "DPOCGGame/DPOCGGameCharacter.h"
 
 // Sets default values for this component's properties
 UCustomMovementComponent::UCustomMovementComponent()
@@ -25,6 +27,7 @@ void UCustomMovementComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	OwningPlayerInstance = CharacterOwner->GetMesh()->GetAnimInstance();
+	OwningPlayerCharacter = Cast<ADPOCGGameCharacter>(CharacterOwner);
 	if (OwningPlayerInstance)
 	{
 		OwningPlayerInstance->OnMontageEnded.AddDynamic(this, &UCustomMovementComponent::OnCLimbMontageEnded);
@@ -363,7 +366,14 @@ void UCustomMovementComponent::TryStartVaulting()
 	FVector vaultEnd;
 	if (CanStartVaulting(vaultStart, vaultEnd))
 	{
-		Debug::Print(TEXT("fuck it, we vault. From: ") + vaultStart.ToCompactString() + TEXT(" to: ") + vaultEnd.ToCompactString(), FColor::Green);
+		Debug::Print(TEXT("fuck it, we vault. From: ") +
+			vaultStart.ToCompactString() +
+			TEXT(" to: ") + vaultEnd.ToCompactString(),
+			FColor::Green);
+		SetMotionWarpTarget(FName("VaultStartPoint"), vaultStart);
+		SetMotionWarpTarget(FName("VaultEndPoint"), vaultEnd);
+		StartClimbing();
+		PlayClimbMontage(VaultMontage);
 	}
 	else
 	{
@@ -383,7 +393,7 @@ bool UCustomMovementComponent::CanStartVaulting(FVector& OutVaultStart, FVector&
 	const FVector componentLocation = UpdatedComponent->GetComponentLocation();
 	const FVector componentForward = UpdatedComponent->GetForwardVector();
 	const FVector upVector = UpdatedComponent->GetUpVector();
-	const FVector downVector = -upVector;
+	const FVector downVector = -UpdatedComponent->GetUpVector();
 
 	for (int32 i = 0; i < 5; i++)
 	{
@@ -509,10 +519,16 @@ void UCustomMovementComponent::OnCLimbMontageEnded(UAnimMontage* Montage, bool b
 		StartClimbing();
 		// StopMovementImmediately();
 	}
-	else if (Montage == ClimbToTopMontage)
+	else if (Montage == ClimbToTopMontage || Montage == VaultMontage)
 	{
 		SetMovementMode(MOVE_Walking);
 	}
+}
+
+void UCustomMovementComponent::SetMotionWarpTarget(const FName& InWarpTargetName, const FVector& InTargetPosition)
+{
+	if(!OwningPlayerCharacter) return;
+	OwningPlayerCharacter->GetMotionWarpingComponent()->AddOrUpdateWarpTargetFromLocation(InWarpTargetName, InTargetPosition);
 }
 
 #pragma endregion
