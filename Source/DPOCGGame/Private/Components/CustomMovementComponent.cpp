@@ -184,13 +184,14 @@ void UCustomMovementComponent::ToggleClimbing(bool bEnableClimbing)
 		if (CanStartClimbing())
 		{
 			PlayClimbMontage(IdleToClimbMontage);
-		} else if(CheckCanClimbDownLedge())
+		}
+		else if (CheckCanClimbDownLedge())
 		{
 			PlayClimbMontage(ClimbDownLedgeMontage);
-		} else
+		}
+		else
 		{
-			Debug::Print(TEXT("Can NOT climb down ledge"), FColor::Orange, 1);
-			Debug::Print(TEXT("Cannot start climbing"), FColor::Orange, 2);
+			TryStartVaulting();
 		}
 	}
 	else
@@ -235,11 +236,11 @@ bool UCustomMovementComponent::CheckCanClimbDownLedge()
 	FVector ledgeTraceEnd = ledgeTraceStart + down * 300.f;
 
 	FHitResult ledgeTraceHit = DoLineTraceSingleByObject(ledgeTraceStart, ledgeTraceEnd, true);
-	if(walkableSurfaceHit.bBlockingHit && !ledgeTraceHit.bBlockingHit)
+	if (walkableSurfaceHit.bBlockingHit && !ledgeTraceHit.bBlockingHit)
 	{
 		return true;
 	}
-	
+
 	return false;
 }
 
@@ -356,6 +357,53 @@ bool UCustomMovementComponent::CheckHasReachedLedge()
 	return false;
 }
 
+void UCustomMovementComponent::TryStartVaulting()
+{
+	FVector vaultStart;
+	FVector vaultEnd;
+	if (CanStartVaulting(vaultStart, vaultEnd))
+	{
+		Debug::Print(TEXT("fuck it, we vault. From: ") + vaultStart.ToCompactString() + TEXT(" to: ") + vaultEnd.ToCompactString(), FColor::Green);
+	}
+	else
+	{
+		Debug::Print(TEXT("Can't climb down ledge"), FColor::Red, 1);
+		Debug::Print(TEXT("Can't start climbing"), FColor::Red, 2);
+		Debug::Print(TEXT("Can't even vault"), FColor::Red, 2);
+	}
+}
+
+bool UCustomMovementComponent::CanStartVaulting(FVector& OutVaultStart, FVector& OutVaultEnd)
+{
+	if (IsFalling()) return false;
+
+	OutVaultStart = FVector::ZeroVector;
+	OutVaultEnd = FVector::ZeroVector;
+	
+	const FVector componentLocation = UpdatedComponent->GetComponentLocation();
+	const FVector componentForward = UpdatedComponent->GetForwardVector();
+	const FVector upVector = UpdatedComponent->GetUpVector();
+	const FVector downVector = -upVector;
+
+	for (int32 i = 0; i < 5; i++)
+	{
+		const FVector start = (componentLocation + upVector * 100.f) + (componentForward * 100.f) * (i + 1);
+		const FVector end = start + (downVector * 100.f * (i + 1));
+
+		FHitResult vaultTraceHit = DoLineTraceSingleByObject(start, end, true, true);
+		if (i == 0 && vaultTraceHit.bBlockingHit)
+		{
+			OutVaultStart = vaultTraceHit.ImpactPoint;
+		}
+
+		if (i == 4 && vaultTraceHit.bBlockingHit)
+		{
+			OutVaultEnd = vaultTraceHit.ImpactPoint;
+		}
+	}
+	return  OutVaultStart != FVector::ZeroVector && OutVaultEnd != FVector::ZeroVector;
+}
+
 bool UCustomMovementComponent::ShouldClimbLedge()
 {
 	return CheckHasReachedLedge() && GetUnrotatedClimbVelocity().Z > 10.f;
@@ -460,9 +508,8 @@ void UCustomMovementComponent::OnCLimbMontageEnded(UAnimMontage* Montage, bool b
 	{
 		StartClimbing();
 		// StopMovementImmediately();
-		
 	}
-	else if(Montage == ClimbToTopMontage)
+	else if (Montage == ClimbToTopMontage)
 	{
 		SetMovementMode(MOVE_Walking);
 	}

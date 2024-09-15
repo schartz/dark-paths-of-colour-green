@@ -101,6 +101,8 @@ private:
 	bool CheckShouldStopClimbing();
 	bool CheckHasReachedFloor();
 	bool CheckHasReachedLedge();
+	void TryStartVaulting();
+	bool CanStartVaulting(FVector& OutVaultStart, FVector& OutVaultEnd);
 	bool ShouldClimbLedge();
 	void ProcessClimbableSurfaceInformation();
 	FQuat GetClimbRotation(float DeltaTime);
