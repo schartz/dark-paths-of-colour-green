@@ -18,8 +18,7 @@ struct FInputActionValue;
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
 UCLASS(config=Game)
-class ADPOCGGameCharacter : public ACharacter
-{
+class ADPOCGGameCharacter : public ACharacter {
 private:
 	GENERATED_BODY()
 
@@ -27,7 +26,6 @@ public:
 	ADPOCGGameCharacter(const FObjectInitializer& ObjectInitializer);
 
 private:
-
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraBoom;
@@ -69,12 +67,11 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* ClimbAction;
 	void OnClimbActionStarted(const FInputActionValue& Value);
-			
 
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
+
 	// To add mapping context
 	virtual void BeginPlay();
 
@@ -85,6 +82,5 @@ public:
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 	FORCEINLINE UCustomMovementComponent* GetCustomMovementComponent() const { return CustomMovementComponent; }
-	FORCEINLINE UMotionWarpingComponent* GetMotionWarpingComponent() const {return  MotionWarpingComponent;}
+	FORCEINLINE UMotionWarpingComponent* GetMotionWarpingComponent() const { return MotionWarpingComponent; }
 };
-

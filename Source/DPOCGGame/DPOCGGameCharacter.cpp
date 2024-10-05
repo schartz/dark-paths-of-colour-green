@@ -22,9 +22,12 @@ DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 // ADPOCGGameCharacter
 
 ADPOCGGameCharacter::ADPOCGGameCharacter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer.SetDefaultSubobjectClass<UCustomMovementComponent>(
-		ACharacter::CharacterMovementComponentName))
-{
+	: Super(
+		ObjectInitializer.SetDefaultSubobjectClass<UCustomMovementComponent>
+		(
+			ACharacter::CharacterMovementComponentName
+		)
+	) {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
@@ -32,7 +35,7 @@ ADPOCGGameCharacter::ADPOCGGameCharacter(const FObjectInitializer& ObjectInitial
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
-	
+
 	CustomMovementComponent = Cast<UCustomMovementComponent>(GetCharacterMovement());
 
 	// Configure character movement
@@ -67,8 +70,7 @@ ADPOCGGameCharacter::ADPOCGGameCharacter(const FObjectInitializer& ObjectInitial
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
-void ADPOCGGameCharacter::BeginPlay()
-{
+void ADPOCGGameCharacter::BeginPlay() {
 	// Call the base class  
 	Super::BeginPlay();
 
@@ -78,30 +80,25 @@ void ADPOCGGameCharacter::BeginPlay()
 //////////////////////////////////////////////////////////////////////////
 // Input
 
-void ADPOCGGameCharacter::OnClimbActionStarted(const FInputActionValue& Value)
-{
-	if(!CustomMovementComponent) return;
+void ADPOCGGameCharacter::OnClimbActionStarted(const FInputActionValue& Value) {
+	if (!CustomMovementComponent) return;
 	bool isClimbingNow = CustomMovementComponent->IsClimbing();
 	// Debug::Print(FText::FromString((isClimbingNow ? TEXT("True") : TEXT("False"))).ToString());
 	CustomMovementComponent->ToggleClimbing(!isClimbingNow);
 	// Debug::Print(isClimbingNow ? TEXT("Was climbing. now stopped") : TEXT("Was not climbing. Now started climbing"));
 }
 
-void ADPOCGGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
+void ADPOCGGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
 	// Add Input Mapping Context
-	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
-	{
+	if (APlayerController* PlayerController = Cast<APlayerController>(GetController())) {
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<
-			UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
+			UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer())) {
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
 
 	// Set up action bindings
-	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
-	{
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
 		// Jumping
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
@@ -116,8 +113,7 @@ void ADPOCGGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		EnhancedInputComponent->BindAction(ClimbAction, ETriggerEvent::Started, this,
 		                                   &ADPOCGGameCharacter::OnClimbActionStarted);
 	}
-	else
-	{
+	else {
 		UE_LOG(LogTemplateCharacter, Error,
 		       TEXT(
 			       "'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."
@@ -125,19 +121,16 @@ void ADPOCGGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	}
 }
 
-void ADPOCGGameCharacter::Move(const FInputActionValue& Value)
-{
-	if(!CustomMovementComponent or Controller == nullptr) return;
-	if(CustomMovementComponent->IsClimbing()) HandleClimbMovementInput(Value);
+void ADPOCGGameCharacter::Move(const FInputActionValue& Value) {
+	if (!CustomMovementComponent or Controller == nullptr) return;
+	if (CustomMovementComponent->IsClimbing()) HandleClimbMovementInput(Value);
 	else HandleGroundMovementInput(Value);
-	
 }
 
-void ADPOCGGameCharacter::HandleGroundMovementInput(const FInputActionValue& Value)
-{
+void ADPOCGGameCharacter::HandleGroundMovementInput(const FInputActionValue& Value) {
 	// input is a Vector2D
 	const FVector2D MovementVector = Value.Get<FVector2D>();
-	
+
 	// find out which way is forward
 	const FRotator Rotation = Controller->GetControlRotation();
 	const FRotator YawRotation(0, Rotation.Yaw, 0);
@@ -153,8 +146,7 @@ void ADPOCGGameCharacter::HandleGroundMovementInput(const FInputActionValue& Val
 	AddMovementInput(RightDirection, MovementVector.X);
 }
 
-void ADPOCGGameCharacter::HandleClimbMovementInput(const FInputActionValue& Value)
-{
+void ADPOCGGameCharacter::HandleClimbMovementInput(const FInputActionValue& Value) {
 	const FVector2D movementVector = Value.Get<FVector2d>();
 	const FVector forwardDirection = FVector::CrossProduct(
 		-CustomMovementComponent->GetClimbableSurfaceNormal(), GetActorRightVector()
@@ -168,13 +160,11 @@ void ADPOCGGameCharacter::HandleClimbMovementInput(const FInputActionValue& Valu
 	AddMovementInput(rightDirection, movementVector.X);
 }
 
-void ADPOCGGameCharacter::Look(const FInputActionValue& Value)
-{
+void ADPOCGGameCharacter::Look(const FInputActionValue& Value) {
 	// input is a Vector2D
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
 
-	if (Controller != nullptr)
-	{
+	if (Controller != nullptr) {
 		// add yaw and pitch input to controller
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);

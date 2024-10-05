@@ -3,5 +3,4 @@
 #include "DPOCGGame.h"
 #include "Modules/ModuleManager.h"
 
-IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, DPOCGGame, "DPOCGGame" );
- 
+IMPLEMENT_PRIMARY_GAME_MODULE(FDefaultGameModuleImpl, DPOCGGame, "DPOCGGame");

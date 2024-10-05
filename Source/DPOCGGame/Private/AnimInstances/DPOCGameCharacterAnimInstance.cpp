@@ -8,21 +8,18 @@
 #include "Kismet/KismetMathLibrary.h"
 
 
-void UDPOCGameCharacterAnimInstance::NativeInitializeAnimation()
-{
+void UDPOCGameCharacterAnimInstance::NativeInitializeAnimation() {
 	Super::NativeInitializeAnimation();
 	GameCharacter = Cast<ADPOCGGameCharacter>(TryGetPawnOwner());
 
-	if(GameCharacter)
-	{
+	if (GameCharacter) {
 		CustomMovementComponent = GameCharacter->GetCustomMovementComponent();
 	}
 }
 
-void UDPOCGameCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
-{
+void UDPOCGameCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds) {
 	Super::NativeUpdateAnimation(DeltaSeconds);
-	if(!GameCharacter || !CustomMovementComponent) return;
+	if (!GameCharacter || !CustomMovementComponent) return;
 
 	GetGroundSpeed();
 	GetAirSpeed();
@@ -30,36 +27,28 @@ void UDPOCGameCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	GetIsFalling();
 	GetIsClimbing();
 	GetClimbVelocity();
-
-	
 }
 
-void UDPOCGameCharacterAnimInstance::GetGroundSpeed()
-{
+void UDPOCGameCharacterAnimInstance::GetGroundSpeed() {
 	GroundSpeed = UKismetMathLibrary::VSizeXY(GameCharacter->GetVelocity());
 }
 
-void UDPOCGameCharacterAnimInstance::GetAirSpeed()
-{
+void UDPOCGameCharacterAnimInstance::GetAirSpeed() {
 	AirSpeed = GameCharacter->GetVelocity().Z;
 }
 
-void UDPOCGameCharacterAnimInstance::GetShouldMove()
-{
+void UDPOCGameCharacterAnimInstance::GetShouldMove() {
 	bShouldMove = CustomMovementComponent->GetCurrentAcceleration().Size() > 0 && GroundSpeed > 5.0f && !bIsFalling;
 }
 
-void UDPOCGameCharacterAnimInstance::GetIsFalling()
-{
+void UDPOCGameCharacterAnimInstance::GetIsFalling() {
 	bIsFalling = CustomMovementComponent->IsFalling();
 }
 
-void UDPOCGameCharacterAnimInstance::GetIsClimbing()
-{
+void UDPOCGameCharacterAnimInstance::GetIsClimbing() {
 	bIsClimbing = CustomMovementComponent->IsClimbing();
 }
 
-void UDPOCGameCharacterAnimInstance::GetClimbVelocity()
-{
+void UDPOCGameCharacterAnimInstance::GetClimbVelocity() {
 	ClimbVelocity = CustomMovementComponent->GetUnrotatedClimbVelocity();
 }

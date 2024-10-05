@@ -11,17 +11,15 @@ class UAnimInstance;
 class ADPOCGGameCharacter;
 
 UENUM(BlueprintType)
-namespace ECustomMovementMode
-{
-	enum Type
-	{	MOVE_Climb UMETA(DisplayName="Climb Mode")
+namespace ECustomMovementMode {
+	enum Type {
+		MOVE_Climb UMETA(DisplayName="Climb Mode")
 	};
 }
 
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class DPOCGGAME_API UCustomMovementComponent : public UCharacterMovementComponent
-{
+class DPOCGGAME_API UCustomMovementComponent : public UCharacterMovementComponent {
 	GENERATED_BODY()
 
 public:
@@ -53,48 +51,61 @@ private:
 #pragma endregion
 
 #pragma region ClimbVariablesBlueprintable
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character Movement: Climbing",	meta=(AllowPrivateAccess="true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character Movement: Climbing",
+		meta=(AllowPrivateAccess="true"))
 	TArray<TEnumAsByte<EObjectTypeQuery>> ClimbableSurfaceTraceTypes;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character Movement: Climbing",	meta=(AllowPrivateAccess="true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character Movement: Climbing",
+		meta=(AllowPrivateAccess="true"))
 	float ClimbCapsuleTraceRadius = 50.f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character Movement: Climbing",	meta=(AllowPrivateAccess="true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character Movement: Climbing",
+		meta=(AllowPrivateAccess="true"))
 	float ClimbCapsuleTraceHalfHeight = 72.f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character Movement: Climbing",	meta=(AllowPrivateAccess="true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character Movement: Climbing",
+		meta=(AllowPrivateAccess="true"))
 	float MaxBreakCLimbDeceleration = 400.f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character Movement: Climbing", meta=(AllowPrivateAccess="true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character Movement: Climbing",
+		meta=(AllowPrivateAccess="true"))
 	float MaxClimbSpeed = 100.f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character Movement: Climbing",	meta=(AllowPrivateAccess="true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character Movement: Climbing",
+		meta=(AllowPrivateAccess="true"))
 	float MaxClimbAcceleration = 300.f;
 
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character Movement: Climbing",	meta=(AllowPrivateAccess="true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character Movement: Climbing",
+		meta=(AllowPrivateAccess="true"))
 	float ClimbDownSurfaceTraceOffset = 0.f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character Movement: Climbing",	meta=(AllowPrivateAccess="true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character Movement: Climbing",
+		meta=(AllowPrivateAccess="true"))
 	float ClimbDownLedgeTraceOffset = 50.f;
-	
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character Movement: Climbing",	meta=(AllowPrivateAccess="true"))
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character Movement: Climbing",
+		meta=(AllowPrivateAccess="true"))
 	float ClimbUpEyeTraceOffset = 20.f;
 
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character Movement: Climbing",	meta=(AllowPrivateAccess="true"))
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character Movement: Climbing",
+		meta=(AllowPrivateAccess="true"))
 	UAnimMontage* IdleToClimbMontage;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character Movement: Climbing",	meta=(AllowPrivateAccess="true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character Movement: Climbing",
+		meta=(AllowPrivateAccess="true"))
 	UAnimMontage* ClimbToTopMontage;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character Movement: Climbing",	meta=(AllowPrivateAccess="true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character Movement: Climbing",
+		meta=(AllowPrivateAccess="true"))
 	UAnimMontage* ClimbDownLedgeMontage;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character Movement: Climbing",	meta=(AllowPrivateAccess="true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character Movement: Climbing",
+		meta=(AllowPrivateAccess="true"))
 	UAnimMontage* VaultMontage;
-	
+
 #pragma endregion
 
 #pragma region ClimbCore
@@ -115,7 +126,7 @@ private:
 	FQuat GetClimbRotation(float DeltaTime);
 	void SnapMovementToClimbableSurfaces(float DeltaTime);
 	void PlayClimbMontage(UAnimMontage* MontageToPlay);
-	
+
 	UFUNCTION()
 	void OnCLimbMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 	void SetMotionWarpTarget(const FName& InWarpTargetName, const FVector& InTargetPosition);
@@ -132,5 +143,6 @@ protected:
 	virtual void PhysCustom(float deltaTime, int32 Iterations) override;
 	virtual float GetMaxAcceleration() const override;
 	virtual float GetMaxSpeed() const override;
-	virtual FVector ConstrainAnimRootMotionVelocity(const FVector& RootMotionVelocity, const FVector& CurrentVelocity) const override;
+	virtual FVector ConstrainAnimRootMotionVelocity(const FVector& RootMotionVelocity,
+	                                                const FVector& CurrentVelocity) const override;
 };

@@ -12,9 +12,9 @@ class ADPOCGGameCharacter;
  * 
  */
 UCLASS()
-class DPOCGGAME_API UDPOCGameCharacterAnimInstance : public UAnimInstance
-{
+class DPOCGGAME_API UDPOCGameCharacterAnimInstance : public UAnimInstance {
 	GENERATED_BODY()
+
 public:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;

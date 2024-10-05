@@ -7,13 +7,9 @@
 #include "DPOCGGameGameMode.generated.h"
 
 UCLASS(minimalapi)
-class ADPOCGGameGameMode : public AGameModeBase
-{
+class ADPOCGGameGameMode : public AGameModeBase {
 	GENERATED_BODY()
 
 public:
 	ADPOCGGameGameMode();
 };
-
-
-
